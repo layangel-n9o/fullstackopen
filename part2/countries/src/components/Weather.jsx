@@ -3,10 +3,15 @@ import axios from 'axios'
 
 const Weather = ({ capital }) => {
   const [weather, setWeather] = useState(null)
+  const [error, setError] = useState(false)
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
   useEffect(() => {
     if (!apiKey || !capital) return
+
+    let active = true
+    setWeather(null)
+    setError(false)
 
     axios
       .get('https://api.openweathermap.org/data/2.5/weather', {
@@ -16,12 +21,28 @@ const Weather = ({ capital }) => {
           appid: apiKey,
         },
       })
-      .then((response) => setWeather(response.data))
-      .catch(() => setWeather(null))
+      .then((response) => {
+        if (active) {
+          setWeather(response.data)
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setError(true)
+        }
+      })
+
+    return () => {
+      active = false
+    }
   }, [capital, apiKey])
 
   if (!apiKey) {
     return <p>Set VITE_WEATHER_API_KEY in a .env file to see the weather.</p>
+  }
+
+  if (error) {
+    return <p>Could not load weather for {capital}.</p>
   }
 
   if (!weather) {

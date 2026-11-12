@@ -89,8 +89,22 @@ describe('Blog app', () => {
       await openBlog(page, 'Blog to delete', 'Playwright')
 
       page.on('dialog', (dialog) => dialog.accept())
-      await page.getByRole('button', { name: 'remove' }).click()
+      await Promise.all([
+        page.waitForResponse(
+          (response) =>
+            response.url().includes('/api/blogs') &&
+            response.request().method() === 'DELETE' &&
+            response.status() === 204
+        ),
+        page.getByRole('button', { name: 'remove' }).click(),
+      ])
 
+      await expect(page).toHaveURL('/')
+      await expect(
+        page.getByRole('link', { name: 'Blog to delete Playwright' })
+      ).not.toBeVisible()
+
+      await page.reload()
       await expect(
         page.getByRole('link', { name: 'Blog to delete Playwright' })
       ).not.toBeVisible()

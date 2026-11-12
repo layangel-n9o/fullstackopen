@@ -6,6 +6,8 @@ Dépôt des exercices du cours Full Stack Open (Université d'Helsinki).
 
 ```
 fullstackopen/
+  part0/           ex. 0.4 - 0.6   : diagrammes de séquence (mermaid)
+
   part1/
     courseinfo/    ex. 1.1 - 1.5   : composants et props
     unicafe/       ex. 1.6 - 1.11  : état, statistiques, tableau HTML
@@ -24,7 +26,7 @@ fullstackopen/
 
   part5/
     bloglist-frontend/  ex. 5.1 - 5.31 : React, tests Vitest, React Router
-    bloglist-e2e/       ex. 5.17 - 5.28 : tests Playwright
+    bloglist-e2e/       ex. 5.17 - 5.23, 5.28 : tests Playwright
 ```
 
 ## Utilisation rapide

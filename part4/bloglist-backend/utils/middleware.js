@@ -3,9 +3,14 @@ const logger = require('./logger')
 const User = require('../models/user')
 
 const requestLogger = (request, response, next) => {
+  const body = { ...request.body }
+  if (body.password) {
+    body.password = '***'
+  }
+
   logger.info('Method:', request.method)
   logger.info('Path:  ', request.path)
-  logger.info('Body:  ', request.body)
+  logger.info('Body:  ', body)
   logger.info('---')
   next()
 }
@@ -53,7 +58,12 @@ const userExtractor = async (request, response, next) => {
     return response.status(401).json({ error: 'token invalid' })
   }
 
-  request.user = await User.findById(decodedToken.id)
+  const user = await User.findById(decodedToken.id)
+  if (!user) {
+    return response.status(401).json({ error: 'user not found' })
+  }
+
+  request.user = user
   next()
 }
 

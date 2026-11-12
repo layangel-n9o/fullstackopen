@@ -53,7 +53,7 @@ const App = () => {
       setUser(user)
       notify(`Welcome back, ${user.name}`)
       navigate('/')
-    } catch (error) {
+    } catch {
       notify('wrong username or password', 'error')
     }
   }
@@ -107,7 +107,7 @@ const App = () => {
       setBlogs(blogs.filter((b) => b.id !== blog.id))
       notify(`Removed ${blog.title}`)
       navigate('/')
-    } catch (error) {
+    } catch {
       notify('removing the blog failed', 'error')
     }
   }

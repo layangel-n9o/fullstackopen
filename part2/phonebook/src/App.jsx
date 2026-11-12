@@ -88,12 +88,16 @@ const App = () => {
         setPersons(persons.filter((p) => p.id !== person.id))
         showNotification(`Deleted ${person.name}`)
       })
-      .catch(() => {
-        showNotification(
-          `Information of ${person.name} has already been removed from server`,
-          'error'
-        )
-        setPersons(persons.filter((p) => p.id !== person.id))
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          showNotification(
+            `Information of ${person.name} has already been removed from server`,
+            'error'
+          )
+          setPersons(persons.filter((p) => p.id !== person.id))
+        } else {
+          showNotification(`Could not delete ${person.name}`, 'error')
+        }
       })
   }
 

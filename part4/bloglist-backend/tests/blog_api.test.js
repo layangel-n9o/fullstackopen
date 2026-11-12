@@ -182,15 +182,65 @@ describe('when there are initially some blogs saved', () => {
 
   describe('updating a blog', () => {
     test('succeeds in updating the likes', async () => {
+      const token = await tokenFor()
       const blogsAtStart = await helper.blogsInDb()
       const blogToUpdate = blogsAtStart[0]
 
       const response = await api
         .put(`/api/blogs/${blogToUpdate.id}`)
+        .set('Authorization', `Bearer ${token}`)
         .send({ ...blogToUpdate, likes: blogToUpdate.likes + 10 })
         .expect(200)
 
       assert.strictEqual(response.body.likes, blogToUpdate.likes + 10)
+    })
+
+    test('fails with 401 when no token is provided', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToUpdate = blogsAtStart[0]
+
+      await api
+        .put(`/api/blogs/${blogToUpdate.id}`)
+        .send({ ...blogToUpdate, likes: 999 })
+        .expect(401)
+    })
+  })
+
+  describe('when the token belongs to a deleted user', () => {
+    test('creating a blog fails with 401', async () => {
+      const token = await tokenFor()
+      const users = await helper.usersInDb()
+      await User.findByIdAndDelete(users[0].id)
+
+      const newBlog = {
+        title: 'Ghost blog',
+        author: 'Ghost',
+        url: 'http://example.com/ghost',
+      }
+
+      await api
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newBlog)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+    })
+
+    test('deleting a blog fails with 401', async () => {
+      const token = await tokenFor()
+      const blogsAtStart = await helper.blogsInDb()
+      const users = await helper.usersInDb()
+      await User.findByIdAndDelete(users[0].id)
+
+      await api
+        .delete(`/api/blogs/${blogsAtStart[0].id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(401)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
     })
   })
 })
