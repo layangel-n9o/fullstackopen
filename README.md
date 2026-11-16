@@ -2,6 +2,8 @@
 
 Dépôt des exercices du cours Full Stack Open (Université d'Helsinki).
 
+Annuaire en ligne : [Ouvrir le Phonebook](https://fullstackopen-vr5c.onrender.com/)
+
 ## Organisation
 
 ```
